@@ -27,7 +27,7 @@ class Arena:
             print(" ".join(row))
         print()
 
-    def place_symbol_randomly(self, symbol):
+    def place_weapon_randomly(self, symbol):
         while True:
             x = random.randint(0, self.width -1)
             y = random.randint(0, self.height -1)
@@ -37,20 +37,23 @@ class Arena:
                 break
 
     def check_for_combat(self):
-        #das funktioniert grad so, dass das Dictionary positions befüllt wird mit der Position (x,y) und agent.id,
-        # und dann wird halt geschaut, ob nach der move Funktion bereits eine Position von einem Agenten
-        # in der positions Dictionary ist, und wenn das der fall ist dann geht der Kampf los.
+
         positions = {}
         for agent in self.agents:
             pos = agent.position
             if pos in positions:
                 other = positions[pos]
-                agent.attack_other_agent(other)
+                agent.combat(other)
                 if other.hp <= 0:
                     self.agents.remove(other)
+                    print(f"{other.id} got killed")
+                elif agent.hp <=0:
+                    self.agents.remove(agent)
+                    print(f"{agent.id} got killed")
 
-                print (f"⚔️  Kampf zwischen Agent {agent} und Agent {other}!")
-                print(other.hp)
+                print (f"⚔️  Kampf zwischen Agent {agent.id} und Agent {other.id}!")
+                print(f"HP von {other.id}: {other.hp}")
+                print(f"HP von {agent.id}: {agent.hp}")
 
 
             else:
@@ -66,12 +69,13 @@ class Arena:
 
             for agent in self.agents:
                 agent.move(self.width, self.height) #es wird eine neue Position gespeichert pro Agent
+                if agent.position == #da wo halt die waffe ist, dann nimm sie auf und erhalte punkte dazu
 
             for agent in self.agents:
                 x_new, y_new = agent.position
                 self.grid[y_new][x_new] = agent.id
             self.check_for_combat()
-            #self.print_grid()
+            self.print_grid_live()
 
 
     def print_grid_live(self):
@@ -81,9 +85,9 @@ class Arena:
 
 
 arena = Arena(5,5)
-agent_01 = Agent((2,2), 100, 100, 10, 50, "D")
-agent_02 = Agent((4,4), 100, 100, 50, 10, "A")
+agent_01 = Agent((2,2), 100, 10, 10, "D")
+agent_02 = Agent((4,4), 100, 30, 5, "A")
 arena.add_agent(agent_01)
-arena.add_agent(agent_02)
-
-arena.move_all_agents(500)
+#arena.add_agent(agent_02)
+arena.place_weapon_randomly("S")
+arena.move_all_agents(10)
