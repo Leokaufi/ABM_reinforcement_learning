@@ -10,6 +10,7 @@ class Arena:
         self.height = height
         self.grid = np.full((height, width), ".", dtype=str)
         self.agents = []
+        self.weapons = {}
 
     def add_agent(self, agent):
         x, y = agent.position
@@ -27,14 +28,14 @@ class Arena:
             print(" ".join(row))
         print()
 
-    def place_weapon_randomly(self, symbol):
-        while True:
+    def place_object_randomly(self):
+        object_list = ["S", "D", "B"]
+        for i in range(len(object_list)):
             x = random.randint(0, self.width -1)
             y = random.randint(0, self.height -1)
+            self.grid[(x,y)] = object_list[i - 1]
+            self.weapons = object_list[i - 1]
 
-            if self.grid[y, x] == ".":
-                self.grid[y,x] = symbol
-                break
 
     def check_for_combat(self):
 
@@ -69,7 +70,14 @@ class Arena:
 
             for agent in self.agents:
                 agent.move(self.width, self.height) #es wird eine neue Position gespeichert pro Agent
-                if agent.position == #da wo halt die waffe ist, dann nimm sie auf und erhalte punkte dazu
+                if agent.position == self.pos_weapon: #if agent meets the weapon
+                    if self.grid[agent.position] == "S": #S for sword
+                        agent.attack += 10
+                    if self.grid[agent.position] == "B": #B for bow
+                        agent.bow = True
+                    if self.grid[agent.position] == "D": #D for defense - so shield
+                        agent.defense += 10
+                    self.grid[agent.position] = "." #removing object
 
             for agent in self.agents:
                 x_new, y_new = agent.position
@@ -81,13 +89,21 @@ class Arena:
     def print_grid_live(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         self.print_grid()
-        time.sleep(0.2)
+        time.sleep(0.1)
 
 
 arena = Arena(5,5)
 agent_01 = Agent((2,2), 100, 10, 10, "D")
 agent_02 = Agent((4,4), 100, 30, 5, "A")
+
 arena.add_agent(agent_01)
 #arena.add_agent(agent_02)
+
 arena.place_weapon_randomly("S")
-arena.move_all_agents(10)
+arena.place_weapon_randomly("B")
+arena.place_weapon_randomly("D")
+
+print(agent_01.bow)
+arena.move_all_agents(100)
+print(agent_01.bow)
+

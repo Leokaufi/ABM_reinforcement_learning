@@ -9,6 +9,7 @@ class Agent:
         self.attack = attack
         self.defense = defense
         self.id = id
+        self.bow = False
 
     def move(self, arena_width, arena_height):
 
